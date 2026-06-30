@@ -21,24 +21,35 @@
 
 package com.viaversion.viafabricplus.features.font;
 
+import com.viaversion.viafabricplus.ViaFabricPlusImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GlyphSource;
 import net.minecraft.client.gui.font.FontSet;
+import net.minecraft.client.gui.font.glyphs.EffectGlyph;
+import net.minecraft.network.chat.FontDescription;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
-public final class FontCacheReload {
+public class LegacyFontProvider implements Font.Provider {
 
-    public static void reload() {
-        if (Minecraft.getInstance() == null) {
-            return;
-        }
+    private final FontSet customFontSet;
 
-        for (final FontSet storage : Minecraft.getInstance().fontManager.fontSets.values()) {
-            storage.glyphCache.clear();
-        }
+    public LegacyFontProvider() {
+        ViaFabricPlusImpl.INSTANCE.getLogger().warn("Reloading font");
 
-        if (!Minecraft.getInstance().fontManager.fontSets.isEmpty()) {
-            ((IMinecraft) Minecraft.getInstance()).viaFabricPlus$setFont(new Font(new LegacyFontProvider()));
-        }
+        this.customFontSet = Minecraft.getInstance().fontManager.fontSets.get(Identifier.fromNamespaceAndPath("viafabricplus", "legacy"));
+    }
+
+    @Override
+    public @NonNull GlyphSource glyphs(final @NonNull FontDescription font) {
+        // Always use the custom font set regardless of the requested font
+        return this.customFontSet.source(false);
+    }
+
+    @Override
+    public @NonNull EffectGlyph effect() {
+        return this.customFontSet.whiteGlyph();
     }
 
 }

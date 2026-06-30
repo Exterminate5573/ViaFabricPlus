@@ -21,18 +21,33 @@
 
 package com.viaversion.viafabricplus.injection.mixin.core;
 
+import com.viaversion.viafabricplus.features.font.IMinecraft;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
-public abstract class MixinMinecraft {
+public abstract class MixinMinecraft implements IMinecraft {
+
+    @Shadow
+    @Final
+    @Mutable
+    public Font font;
 
     @Inject(method = "close", at = @At("RETURN"))
     private void forceShutdown(CallbackInfo ci) {
         System.exit(0); // Workaround for GH-1218; Before 26.2 this was done by Mojang instead
+    }
+
+    @Override
+    public void viaFabricPlus$setFont(Font font) {
+        this.font = font;
     }
 
 }

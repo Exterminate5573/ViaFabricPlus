@@ -21,24 +21,10 @@
 
 package com.viaversion.viafabricplus.features.font;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.font.FontSet;
 
-public final class FontCacheReload {
+public interface IMinecraft {
 
-    public static void reload() {
-        if (Minecraft.getInstance() == null) {
-            return;
-        }
-
-        for (final FontSet storage : Minecraft.getInstance().fontManager.fontSets.values()) {
-            storage.glyphCache.clear();
-        }
-
-        if (!Minecraft.getInstance().fontManager.fontSets.isEmpty()) {
-            ((IMinecraft) Minecraft.getInstance()).viaFabricPlus$setFont(new Font(new LegacyFontProvider()));
-        }
-    }
+    void viaFabricPlus$setFont(Font font);
 
 }
